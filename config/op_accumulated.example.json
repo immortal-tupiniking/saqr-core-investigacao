@@ -1,0 +1,87 @@
+{
+  "engine_version": "0.3.0",
+  "operational_day": {
+    "date": "2026-07-10",
+    "start": "2026-07-10T08:00:00",
+    "end": "2026-07-11T07:20:00"
+  },
+  "parameters": {
+    "considered_origin_types": [
+      "70",
+      "80"
+    ],
+    "consumption_strategy": "op_accumulated",
+    "consumption_strategies": [
+      "operational_window",
+      "op_accumulated"
+    ],
+    "movement_timestamp": "data_digitacao_hora_digitacao",
+    "repasse_keyword": "REPASSE",
+    "line_names": {
+      "190": "190 - LINHA BALDES",
+      "220": "220 - CENTRO 220",
+      "550": "550 - LINHA DE MOLHO",
+      "750": "750 - SACHE DP. BOSSAR",
+      "760": "760 - CENTRO 760",
+      "770": "770 - CARROSSEL 02",
+      "780": "780 - CENTRO 780",
+      "790": "790 - CENTRO 790",
+      "800": "800 - CARROSSEL 05",
+      "830": "830 - SNACKS",
+      "850": "850 - LINHA DE SACHE L6",
+      "890": "890 - LINHA DE SACHE L8"
+    },
+    "company_by_origin": {
+      "70": "Vale Fértil",
+      "80": "Rivoli"
+    },
+    "finished_product_density_kg_per_l": {
+      "default": 1.0,
+      "by_product": {}
+    }
+  },
+  "rules": {
+    "PRODUCTION_NET": {
+      "version": "1.0.0",
+      "formula": "SUM(90201) - SUM(90252)",
+      "positive_transactions": [
+        "90201"
+      ],
+      "negative_transactions": [
+        "90252"
+      ]
+    },
+    "CONSUMPTION_NET": {
+      "version": "1.0.0",
+      "formula": "SUM(90251) - SUM(90202)",
+      "positive_transactions": [
+        "90251"
+      ],
+      "negative_transactions": [
+        "90202"
+      ]
+    },
+    "REPASSE_KG": {
+      "version": "1.0.0",
+      "formula": "SUM(Qtde Mov 90202 x capacidade kg extraida da descricao do item REPASSE)",
+      "transaction": "90202",
+      "keyword": "REPASSE"
+    },
+    "MPOP_LOSS_KG": {
+      "version": "1.0.0",
+      "formula": "SUM(Qtd. Perda MPOP x capacidade kg extraida da descricao do componente)"
+    },
+    "LINE_FROM_RESOURCE_CENTER": {
+      "version": "1.0.0",
+      "formula": "Linha = Centro de Recurso da execucao da OP"
+    },
+    "THEORETICAL_CONSUMPTION": {
+      "version": "1.0.0",
+      "formula": "Produção líquida x conteúdo líquido identificado na descrição oficial do produto; volume convertido por densidade parametrizada"
+    },
+    "CONSUMPTION_VARIANCE": {
+      "version": "1.0.0",
+      "formula": "Consumo real de MP - Consumo teórico de MP"
+    }
+  }
+}

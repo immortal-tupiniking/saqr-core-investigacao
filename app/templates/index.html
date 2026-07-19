@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SAQR | Grupo Vale Fértil</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">S</div>
+        <div><strong>SAQR</strong><span>Inteligência Industrial</span></div>
+      </div>
+      <nav class="nav-list" aria-label="Navegação principal">
+        <button class="nav-item active" data-page="summary"><span>01</span>Resumo Executivo</button>
+        <button class="nav-item" data-page="lines"><span>02</span>Consumo por Linha</button>
+        <button class="nav-item" data-page="ops"><span>03</span>Consumo por OP</button>
+        <button class="nav-item" data-page="losses"><span>04</span>Perdas MPOP</button>
+        <button class="nav-item" data-page="repasse"><span>05</span>Repasse</button>
+        <button class="nav-item" data-page="audit"><span>06</span>Auditoria</button>
+        <button class="nav-item" data-page="import"><span>07</span>Importação</button>
+      </nav>
+      <div class="sidebar-foot">
+        <span class="status-dot confirmed"></span>
+        <div><strong>Motor v{{ version }}</strong><small>Fontes oficiais preservadas</small></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-button" id="menuButton" aria-label="Abrir menu">☰</button>
+        <div>
+          <p class="eyebrow">Sistema de Avaliação de Quebras e Rendimentos</p>
+          <h1 id="pageTitle">Resumo Executivo</h1>
+        </div>
+        <div class="top-actions">
+          <label class="strategy-control">
+            <span>Estratégia de consumo</span>
+            <select id="strategySelect" aria-label="Estratégia de consumo"></select>
+          </label>
+          <button class="audit-mode" id="auditModeButton"><span>◉</span> Modo Auditor</button>
+        </div>
+      </header>
+
+      <section class="filter-bar" id="filterBar">
+        <label>Dia operacional<select id="filterDay"></select></label>
+        <label>Empresa<select id="filterCompany"><option value="">Todas</option></select></label>
+        <label>Linha<select id="filterLine"><option value="">Todas</option></select></label>
+        <label>OP<select id="filterOp"><option value="">Todas</option></select></label>
+        <label>Produto<select id="filterProduct"><option value="">Todos</option></select></label>
+        <label>Confiança<select id="filterConfidence"><option value="">Todos</option></select></label>
+        <button class="clear-filters" id="clearFilters">Limpar filtros</button>
+      </section>
+
+      <div class="context-strip" id="contextStrip">
+        <span id="operationalWindow">Carregando período...</span>
+        <span id="calculationInfo">Execução analítica</span>
+        <span class="legend"><i class="confirmed"></i>Confirmado <i class="estimated"></i>Estimado <i class="critical"></i>Divergente <i class="pending"></i>Pendente</span>
+      </div>
+
+      <section class="page active" id="page-summary">
+        <div class="section-heading"><div><h2>Indicadores do período</h2><p>Valores preparados pelo Motor Analítico, sem cálculos na interface.</p></div></div>
+        <div class="kpi-grid" id="kpiGrid"><div class="skeleton tall"></div></div>
+        <div class="panel compact-panel">
+          <div class="panel-header"><div><h3>Escopo analisado</h3><p id="summaryScope">Carregando...</p></div><button class="text-button" data-page-jump="ops">Ver OPs →</button></div>
+          <div id="summaryAlerts" class="summary-alerts"></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-lines">
+        <div class="section-heading"><div><h2>Consumo por Linha</h2><p>Selecione uma linha para abrir as ordens de produção relacionadas.</p></div></div>
+        <div class="panel table-panel"><div class="table-wrap"><table><thead><tr>
+          <th>Centro</th><th>Linha</th><th>OPs</th><th>Produção</th><th>Consumo MP</th><th>Lixo</th><th>Repasse</th><th>MP aproveitada</th><th>Rendimento</th><th>Padrão</th><th>Excesso</th><th>Confiança</th><th>Pendências</th>
+        </tr></thead><tbody id="linesBody"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-ops">
+        <div class="section-heading"><div><h2>Consumo por OP</h2><p>Clique em uma OP para navegar até os registros e componentes originais.</p></div></div>
+        <div class="panel table-panel"><div class="table-wrap wide"><table><thead><tr>
+          <th>Empresa</th><th>OP</th><th>Produto</th><th>Descrição</th><th>Centro</th><th>Linha</th><th>Produção</th><th>Teórico</th><th>Real</th><th>Diferença</th><th>Lixo</th><th>Repasse</th><th>MP aproveitada</th><th>Rendimento</th><th>Padrão</th><th>Excesso</th><th>Confiança</th>
+        </tr></thead><tbody id="opsBody"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-detail">
+        <div class="section-heading detail-heading"><div><button class="back-button" id="backToOps">← Voltar para OPs</button><h2 id="detailTitle">Detalhamento da OP</h2><p id="detailSubtitle"></p></div></div>
+        <div id="detailSections"></div>
+      </section>
+
+      <section class="page" id="page-losses">
+        <div class="section-heading"><div><h2>Perdas MPOP</h2><p>Registros de perda preservados com quantidade original, conversão e hash da fonte.</p></div></div>
+        <div class="panel table-panel"><div class="table-wrap"><table><thead><tr>
+          <th>OP</th><th>Componente</th><th>Descrição</th><th>Grupo</th><th>Qtd. original</th><th>Convertido</th><th>Confiança</th><th>Origem</th>
+        </tr></thead><tbody id="lossesBody"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-repasse">
+        <div class="section-heading"><div><h2>Repasse</h2><p>Registros de repasse preparados e rastreados pelo Motor Analítico.</p></div></div>
+        <div class="panel table-panel"><div class="table-wrap"><table><thead><tr>
+          <th>OP</th><th>Componente</th><th>Descrição</th><th>Movimento</th><th>Qtd. original</th><th>Convertido</th><th>Data e hora</th><th>Confiança</th><th>Origem</th>
+        </tr></thead><tbody id="repasseBody"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-audit">
+        <div class="section-heading"><div><h2>Auditoria</h2><p>Inconsistências permanecem visíveis. O sistema não escolhe silenciosamente entre fontes divergentes.</p></div></div>
+        <div class="audit-overview" id="auditOverview"></div>
+        <div class="panel table-panel"><div class="panel-header"><div><h3 id="auditTableTitle">Ocorrências</h3><p id="auditTableDescription">Selecione uma categoria.</p></div></div><div class="table-wrap"><table><thead><tr>
+          <th>Severidade</th><th>Código</th><th>Entidade</th><th>Chave</th><th>Mensagem</th><th>Oficial</th><th>Referência</th><th>Diferença</th>
+        </tr></thead><tbody id="auditBody"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-import">
+        <div class="section-heading"><div><h2>Importação das fontes</h2><p>Carregue as cinco fontes oficiais. O relatório de referência é opcional e nunca participa dos cálculos.</p></div></div>
+        <div class="import-layout">
+          <form class="panel import-form" id="importForm">
+            <div class="upload-field"><label>Movimentações <strong>obrigatório</strong><input type="file" name="movements" accept=".xlsx" required></label><small>Produção, consumo, devoluções e repasse.</small></div>
+            <div class="upload-field"><label>Centro de Recurso <strong>obrigatório</strong><input type="file" name="resources" accept=".xlsx" required></label><small>Execuções, centros e linhas.</small></div>
+            <div class="upload-field"><label>MPOP301 <strong>obrigatório</strong><input type="file" name="mpop" accept=".pdf" required></label><small>Perdas por OP e componente.</small></div>
+            <div class="upload-field"><label>Perdas padrão <strong>obrigatório</strong><input type="file" name="loss_standards" accept=".xlsx" required></label><small>Parâmetros vigentes de perda.</small></div>
+            <div class="upload-field"><label>Categorias <strong>obrigatório</strong><input type="file" name="categories" accept=".xlsx" required></label><small>Classificação de componentes.</small></div>
+            <div class="upload-field optional"><label>Relatório de referência <span>opcional</span><input type="file" name="reference" accept=".xlsx"></label><small>Usado somente para comparação e homologação.</small></div>
+            <button class="primary-button" type="submit" id="importButton">Importar e processar</button>
+            <div class="progress-message" id="importProgress"></div>
+          </form>
+          <div class="panel source-status"><div class="panel-header"><div><h3>Status das fontes</h3><p>Estrutura, volume, alertas e integridade.</p></div></div><div id="sourceStatusList"></div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="auditModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-panel">
+      <div class="modal-header"><div><p class="eyebrow">Modo Auditor</p><h2>Como este valor foi calculado?</h2></div><button class="modal-close" data-close-modal>×</button></div>
+      <div id="auditModalContent" class="modal-content"><div class="skeleton tall"></div></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

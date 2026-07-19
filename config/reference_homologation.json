@@ -1,0 +1,188 @@
+{
+  "engine_version": "0.3.0",
+  "operational_day": {
+    "date": "2026-07-10",
+    "start": "2026-07-10T08:00:00",
+    "end": "2026-07-11T07:20:00"
+  },
+  "parameters": {
+    "considered_origin_types": [
+      "70",
+      "80"
+    ],
+    "consumption_strategy": "op_accumulated",
+    "consumption_strategies": [
+      "operational_window",
+      "op_accumulated"
+    ],
+    "accumulated_allocation_mode": "production_ratio",
+    "movement_timestamp": "data_digitacao_hora_digitacao",
+    "repasse_keyword": "REPASSE",
+    "raw_material_groups": [
+      "Azeitonas",
+      "Azeites e óleos",
+      "Outras Mps"
+    ],
+    "mp_utilized_formula_mode": "net_minus_loss_minus_repasse",
+    "mp_utilized_formula_modes": [
+      "net_minus_loss",
+      "net_minus_loss_minus_repasse"
+    ],
+    "density_kg_per_l": {
+      "by_component": {},
+      "by_classification": {
+        "Azeites e óleos": 1.0
+      }
+    },
+    "component_classification_fallback_patterns": [
+      {
+        "id": "packaging",
+        "pattern": "FILME|CAIXA|TAMPA|VIDRO|SELO|BANDEJA|CHAPA|SACO|BARRICA|BALDE VAZ",
+        "group": "Embalagens"
+      },
+      {
+        "id": "brine",
+        "pattern": "SALMOURA",
+        "group": "Salmoura"
+      },
+      {
+        "id": "olive_oil",
+        "pattern": "AZEITE|OLEO|ÓLEO",
+        "group": "Azeites e óleos"
+      },
+      {
+        "id": "olives",
+        "pattern": "AZ\\.VDS|AZ\\.PTS|AZEITON",
+        "group": "Azeitonas"
+      }
+    ],
+    "loss_standard_product_overrides": {},
+    "loss_standard_mapping_rules": [
+      {
+        "id": "oil",
+        "pattern": "AZEITE|OLEO|ÓLEO",
+        "standard_name": "Azeites e óleos"
+      },
+      {
+        "id": "stuffed",
+        "pattern": "R/PIMENT|RECHE",
+        "standard_name": "Vds. Recheadas"
+      },
+      {
+        "id": "black_sliced",
+        "pattern": "AZ\\.PTS.*FATIAD|PRETA.*FATIAD",
+        "standard_name": "Pts. Fatiadas"
+      },
+      {
+        "id": "green_sliced",
+        "pattern": "FATIAD",
+        "standard_name": "Vds. Fatiadas"
+      },
+      {
+        "id": "pitted",
+        "pattern": "S/CARO|SEM CARO|SNACK",
+        "standard_name": "Vds. s/ caroço"
+      },
+      {
+        "id": "black_whole",
+        "pattern": "AZ\\.PTS|PRETA|AZAPA",
+        "standard_name": "Pts. C/ Caroço"
+      },
+      {
+        "id": "green_whole_default",
+        "pattern": "AZ\\.VDS",
+        "standard_name": "Az.vds.c/ caroço"
+      }
+    ],
+    "line_names": {
+      "190": "190 - LINHA BALDES",
+      "220": "220 - CENTRO 220",
+      "550": "550 - LINHA DE MOLHO",
+      "750": "750 - SACHE DP. BOSSAR",
+      "760": "760 - CENTRO 760",
+      "770": "770 - CARROSSEL 02",
+      "780": "780 - CENTRO 780",
+      "790": "790 - CENTRO 790",
+      "800": "800 - CARROSSEL 05",
+      "830": "830 - SNACKS",
+      "850": "850 - LINHA DE SACHE L6",
+      "890": "890 - LINHA DE SACHE L8"
+    },
+    "company_by_origin": {
+      "70": "Vale Fértil",
+      "80": "Rivoli"
+    },
+    "finished_product_density_kg_per_l": {
+      "default": 1.0,
+      "by_product": {}
+    }
+  },
+  "rules": {
+    "PRODUCTION_NET": {
+      "version": "1.0.0",
+      "formula": "SUM(90201) - SUM(90252)",
+      "positive_transactions": [
+        "90201"
+      ],
+      "negative_transactions": [
+        "90252"
+      ]
+    },
+    "CONSUMPTION_NET": {
+      "version": "1.0.0",
+      "formula": "SUM(90251) - SUM(90202)",
+      "positive_transactions": [
+        "90251"
+      ],
+      "negative_transactions": [
+        "90202"
+      ]
+    },
+    "CONSUMPTION_RAW_KG": {
+      "version": "1.0.0",
+      "formula": "Consumo líquido dos grupos de MP convertido para kg sem misturar unidades incompatíveis"
+    },
+    "CONSUMPTION_PRORATED": {
+      "version": "1.0.0",
+      "formula": "Consumo acumulado líquido da OP x Produção líquida do dia / Realizado acumulado MPOP"
+    },
+    "REPASSE_KG": {
+      "version": "1.0.0",
+      "formula": "SUM(Qtde Mov 90202 x capacidade kg extraída da descrição do item REPASSE)",
+      "transaction": "90202",
+      "keyword": "REPASSE"
+    },
+    "MPOP_LOSS_KG": {
+      "version": "1.0.0",
+      "formula": "SUM(Qtd. Perda MPOP x capacidade kg extraída da descrição do componente)"
+    },
+    "MP_UTILIZED_KG": {
+      "version": "1.0.0",
+      "formula": "Consumo de MP - Lixo [- Repasse conforme parâmetro mp_utilized_formula_mode]"
+    },
+    "OPERATIONAL_YIELD": {
+      "version": "1.0.0",
+      "formula": "MP Aproveitada / Consumo de MP"
+    },
+    "LOSS_STANDARD": {
+      "version": "1.0.0",
+      "formula": "Padrão oficial selecionado por mapeamento parametrizado do produto"
+    },
+    "EXCESS_OVER_STANDARD": {
+      "version": "1.0.0",
+      "formula": "MAX(0, Perda Real - Perda Padrão)"
+    },
+    "LINE_FROM_RESOURCE_CENTER": {
+      "version": "1.0.0",
+      "formula": "Linha = Centro de Recurso da execução da OP"
+    },
+    "THEORETICAL_CONSUMPTION": {
+      "version": "1.0.0",
+      "formula": "Produção líquida x conteúdo líquido identificado na descrição oficial do produto; volume convertido por densidade parametrizada"
+    },
+    "CONSUMPTION_VARIANCE": {
+      "version": "1.0.0",
+      "formula": "Consumo real de MP - Consumo teórico de MP"
+    }
+  }
+}

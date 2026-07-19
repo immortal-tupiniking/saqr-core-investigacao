@@ -1,0 +1,244 @@
+{
+  "increment": "03",
+  "version": "0.3.0",
+  "generated_at": "2026-07-14T15:23:12+00:00",
+  "status": "PASS",
+  "passed": 20,
+  "total": 20,
+  "checks": [
+    {
+      "name": "Endpoints principais disponíveis",
+      "status": "PASS",
+      "expected": "HTTP 200",
+      "obtained": {
+        "/api/health": 200,
+        "/api/state": 200,
+        "/api/imports": 200,
+        "/api/summary": 200,
+        "/api/lines": 200,
+        "/api/ops": 200,
+        "/api/losses": 200,
+        "/api/repasse": 200,
+        "/api/audit": 200
+      },
+      "details": ""
+    },
+    {
+      "name": "Seis fontes registradas",
+      "status": "PASS",
+      "expected": 6,
+      "obtained": 6,
+      "details": ""
+    },
+    {
+      "name": "Cinco fontes oficiais importadas com estrutura processável",
+      "status": "PASS",
+      "expected": "SUCCESS ou SUCCESS_WITH_ISSUES",
+      "obtained": {
+        "movements": "SUCCESS",
+        "resources": "SUCCESS",
+        "mpop": "SUCCESS",
+        "loss_standards": "SUCCESS",
+        "categories": "SUCCESS_WITH_ISSUES"
+      },
+      "details": ""
+    },
+    {
+      "name": "Hashes SHA-256 disponíveis",
+      "status": "PASS",
+      "expected": "64 caracteres por fonte",
+      "obtained": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "details": ""
+    },
+    {
+      "name": "16 OPs navegáveis",
+      "status": "PASS",
+      "expected": 16,
+      "obtained": 16,
+      "details": ""
+    },
+    {
+      "name": "Unidades de produção separadas",
+      "status": "PASS",
+      "expected": [
+        "BD",
+        "BR",
+        "CX"
+      ],
+      "obtained": [
+        "BD",
+        "BR",
+        "CX"
+      ],
+      "details": ""
+    },
+    {
+      "name": "Produção BD",
+      "status": "PASS",
+      "expected": 80.0,
+      "obtained": 80.0,
+      "details": ""
+    },
+    {
+      "name": "Produção BR",
+      "status": "PASS",
+      "expected": 45.0,
+      "obtained": 45.0,
+      "details": ""
+    },
+    {
+      "name": "Produção CX",
+      "status": "PASS",
+      "expected": 12970.0,
+      "obtained": 12970.0,
+      "details": ""
+    },
+    {
+      "name": "Lixo MPOP homologado",
+      "status": "PASS",
+      "expected": 292.90955,
+      "obtained": 292.90954999999997,
+      "details": ""
+    },
+    {
+      "name": "Visão por OP completa",
+      "status": "PASS",
+      "expected": 16,
+      "obtained": 16,
+      "details": ""
+    },
+    {
+      "name": "Oito categorias no detalhamento",
+      "status": "PASS",
+      "expected": [
+        "Produção",
+        "Matéria-prima",
+        "Salmoura",
+        "Aditivos",
+        "Azeites e óleos",
+        "Embalagens",
+        "Lixo",
+        "Repasse"
+      ],
+      "obtained": [
+        "Produção",
+        "Matéria-prima",
+        "Salmoura",
+        "Aditivos",
+        "Azeites e óleos",
+        "Embalagens",
+        "Lixo",
+        "Repasse"
+      ],
+      "details": ""
+    },
+    {
+      "name": "KPI explicável até os registros",
+      "status": "PASS",
+      "expected": "> 0",
+      "obtained": 108,
+      "details": ""
+    },
+    {
+      "name": "Indicadores-fonte versionados",
+      "status": "PASS",
+      "expected": "versão em todos",
+      "obtained": 40,
+      "details": ""
+    },
+    {
+      "name": "Categorias de auditoria disponíveis",
+      "status": "PASS",
+      "expected": [
+        "componentes_conflitantes",
+        "ops_sem_centro",
+        "ops_multicentro",
+        "perdas_sem_classificacao",
+        "movimentos_fora_janela",
+        "divergencias_referencia",
+        "parametros_provisorios",
+        "itens_sem_peso",
+        "possiveis_duplas_deducoes"
+      ],
+      "obtained": [
+        "componentes_conflitantes",
+        "ops_sem_centro",
+        "ops_multicentro",
+        "perdas_sem_classificacao",
+        "divergencias_referencia",
+        "parametros_provisorios",
+        "itens_sem_peso",
+        "possiveis_duplas_deducoes",
+        "movimentos_fora_janela",
+        "all_audit"
+      ],
+      "details": ""
+    },
+    {
+      "name": "Divergências preservadas",
+      "status": "PASS",
+      "expected": "> 0",
+      "obtained": 22,
+      "details": ""
+    },
+    {
+      "name": "Três estratégias publicadas pelo Motor Analítico",
+      "status": "PASS",
+      "expected": [
+        "op_accumulated",
+        "op_accumulated_prorated",
+        "operational_window"
+      ],
+      "obtained": [
+        "op_accumulated",
+        "op_accumulated_prorated",
+        "operational_window"
+      ],
+      "details": "A execução de troca é coberta pela suíte automatizada."
+    },
+    {
+      "name": "Interface sem regras industriais codificadas",
+      "status": "PASS",
+      "expected": "nenhum token de regra",
+      "obtained": {
+        "app/templates/index.html": [],
+        "app/static/app.js": []
+      },
+      "details": ""
+    },
+    {
+      "name": "Relatório de referência fora da linhagem de cálculo",
+      "status": "PASS",
+      "expected": 0,
+      "obtained": 0,
+      "details": ""
+    },
+    {
+      "name": "Classificações de confiança preservadas",
+      "status": "PASS",
+      "expected": "confirmado, estimado e pendente",
+      "obtained": [
+        "CONFIRMADO",
+        "CONFIRMADO_CAPACIDADE_DESCRICAO",
+        "CONFIRMADO_CONTABILMENTE",
+        "CONFIRMADO_CONTEUDO_DESCRICAO",
+        "CONFIRMADO_SEM_HORARIO",
+        "ESTIMADO_CLASSIFICACAO_PARAMETRIZADA",
+        "ESTIMADO_DENSIDADE_PARAMETRIZADA",
+        "ESTIMADO_MAPEAMENTO_PARAMETRIZADO",
+        "ESTIMADO_RATEADO_PRODUCAO",
+        "PENDENTE_ATRIBUICAO_TEMPORAL_BAIXA_MANUAL",
+        "PENDENTE_CENTRO",
+        "PENDENTE_SEM_CONSUMO_MP"
+      ],
+      "details": ""
+    }
+  ]
+}
