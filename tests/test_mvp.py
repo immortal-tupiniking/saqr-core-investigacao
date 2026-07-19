@@ -1,14 +1,62 @@
 from __future__ import annotations
 
 from pathlib import Path
+import os
 import shutil
 
+import pytest
 from fastapi.testclient import TestClient
 
 import app.main as web
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE_ROOT = Path('/mnt/data')
+REQUIRED_SOURCE_FILES = (
+    'movimentação diárias.xlsx',
+    'Movimentações com centro de recurso.xlsx',
+    'MPOP301.PDF',
+    'perda padrão atual VF 03.2026.xlsx',
+    'Categorias.xlsx',
+    'Analise_MPOP_Diaria_10-07-2026_Por_Linha_e_OP_CORRIGIDA.xlsx',
+)
+
+
+def _resolve_test_source_root():
+    candidates = []
+    env_root = os.getenv('SAQR_TEST_SOURCE_ROOT')
+    if env_root:
+        candidates.append(Path(env_root).expanduser())
+
+    candidates.append(ROOT / 'workspace' / 'test_sources')
+
+    if Path('/mnt/data').exists():
+        candidates.append(Path('/mnt/data'))
+
+    seen = set()
+    for candidate in candidates:
+        candidate_path = candidate.expanduser()
+        if not candidate_path.exists() or not candidate_path.is_dir():
+            continue
+
+        resolved_path = candidate_path.resolve()
+        if resolved_path in seen:
+            continue
+        seen.add(resolved_path)
+
+        missing = [name for name in REQUIRED_SOURCE_FILES if not (resolved_path / name).exists()]
+        if not missing:
+            return resolved_path
+
+    checked_paths = [path.resolve() for path in candidates if path.exists() and path.is_dir()]
+    missing_files = sorted({
+        name
+        for path in checked_paths
+        for name in REQUIRED_SOURCE_FILES
+        if not (path / name).exists()
+    })
+    pytest.skip(
+        'O teste integral depende das fontes externas de homologação. '
+        f'Arquivos ausentes: {", ".join(missing_files) if missing_files else "nenhum arquivo localizado"}.'
+    )
 
 
 def test_navigation_and_analytical_views():
@@ -71,13 +119,14 @@ def test_upload_endpoint_imports_six_sources(tmp_path, monkeypatch):
     monkeypatch.setattr(web, 'UPLOADS', uploads)
     monkeypatch.setattr(web, 'OUTPUT', output)
 
+    source_root = _resolve_test_source_root()
     files = {
-        'movements': ('movimentação diárias.xlsx', open(SOURCE_ROOT / 'movimentação diárias.xlsx', 'rb'), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
-        'resources': ('Movimentações com centro de recurso.xlsx', open(SOURCE_ROOT / 'Movimentações com centro de recurso.xlsx', 'rb'), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
-        'mpop': ('MPOP301.PDF', open(SOURCE_ROOT / 'MPOP301.PDF', 'rb'), 'application/pdf'),
-        'loss_standards': ('perda padrão atual VF 03.2026.xlsx', open(SOURCE_ROOT / 'perda padrão atual VF 03.2026.xlsx', 'rb'), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
-        'categories': ('Categorias.xlsx', open(SOURCE_ROOT / 'Categorias.xlsx', 'rb'), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
-        'reference': ('Analise_MPOP_Diaria_10-07-2026_Por_Linha_e_OP_CORRIGIDA.xlsx', open(SOURCE_ROOT / 'Analise_MPOP_Diaria_10-07-2026_Por_Linha_e_OP_CORRIGIDA.xlsx', 'rb'), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+        'movements': ('movimentação diárias.xlsx', open(source_root / 'movimentação diárias.xlsx', 'rb'), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+        'resources': ('Movimentações com centro de recurso.xlsx', open(source_root / 'Movimentações com centro de recurso.xlsx', 'rb'), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+        'mpop': ('MPOP301.PDF', open(source_root / 'MPOP301.PDF', 'rb'), 'application/pdf'),
+        'loss_standards': ('perda padrão atual VF 03.2026.xlsx', open(source_root / 'perda padrão atual VF 03.2026.xlsx', 'rb'), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+        'categories': ('Categorias.xlsx', open(source_root / 'Categorias.xlsx', 'rb'), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+        'reference': ('Analise_MPOP_Diaria_10-07-2026_Por_Linha_e_OP_CORRIGIDA.xlsx', open(source_root / 'Analise_MPOP_Diaria_10-07-2026_Por_Linha_e_OP_CORRIGIDA.xlsx', 'rb'), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
     }
     try:
         with TestClient(web.app) as client:
