@@ -13,6 +13,7 @@ venv/
 # Banco e dados operacionais locais
 data.sqlite
 workspace/
+investigation.sqlite
 
 # Sistema e editor
 .vscode/

@@ -41,14 +41,17 @@ from saqr.query import (
     op_components,
     op_rows,
 )
+from saqr.investigation.router import router as investigation_router
 
 APP_DIR = Path(__file__).resolve().parent
 DEFAULT_DB = ROOT / "data.sqlite"
+DEFAULT_INVESTIGATION_DB = ROOT / "investigation.sqlite"
 DEFAULT_CONFIG = ROOT / "config" / "default.json"
 WORKSPACE = ROOT / "workspace"
 UPLOADS = WORKSPACE / "uploads"
 OUTPUT = WORKSPACE / "output"
 DB_PATH = Path(os.environ.get("SAQR_DB_PATH", DEFAULT_DB))
+INVESTIGATION_DB_PATH = Path(os.environ.get("SAQR_INVESTIGATION_DB_PATH", DEFAULT_INVESTIGATION_DB))
 CONFIG_PATH = Path(os.environ.get("SAQR_CONFIG_PATH", DEFAULT_CONFIG))
 
 @asynccontextmanager
@@ -61,6 +64,9 @@ app = FastAPI(title="SAQR MVP", version="0.3.0", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=APP_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=APP_DIR / "templates")
 engine_lock = threading.Lock()
+app.include_router(investigation_router)
+app.state.data_db_path = DB_PATH
+app.state.investigation_db_path = INVESTIGATION_DB_PATH
 
 
 @contextmanager
