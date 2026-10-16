@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 
 class CreateInvestigationRequest(BaseModel):
+    loss_id: str | None = Field(default=None, min_length=1)
     calculation_id: int
     indicator_id: int
     title: str = Field(min_length=1)
@@ -38,6 +39,7 @@ class InvestigationHistoryOut(BaseModel):
 
 
 class InvestigationOut(BaseModel):
+    loss_id: str | None = None
     investigation_id: str
     calculation_id: int
     primary_indicator_id: int
@@ -82,3 +84,4 @@ class InvestigationListOut(BaseModel):
     page_size: int
     total_count: int
     items: list[InvestigationListItem]
+
