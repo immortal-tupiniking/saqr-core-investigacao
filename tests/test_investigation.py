@@ -248,3 +248,42 @@ def test_replacing_data_db_does_not_delete_investigations(client_and_dbs):
     detail = client.get(f"/api/investigations/{created['investigation_id']}")
     assert detail.status_code == 200
     assert detail.json()["investigation_id"] == created["investigation_id"]
+
+
+def test_loss_id_survives_create_list_and_open_without_replacing_indicator(client_and_dbs):
+    client, _, _ = client_and_dbs
+    created = client.post('/api/investigations', json={
+        'calculation_id': 10, 'indicator_id': 101, 'title': 'Rastreabilidade isolada',
+        'loss_id': '000007', 'production_order': '001001', 'line': '830',
+    })
+    assert created.status_code == 200
+    payload = created.json()
+    assert payload['loss_id'] == '000007'
+    assert payload['calculation_id'] == 10
+    assert payload['primary_indicator_id'] == 101
+    assert payload['production_order'] == '001001'
+    listed = client.get('/api/investigations', params={'production_order': '001001'}).json()
+    assert listed['total_count'] == 1
+    investigation_id = listed['items'][0]['investigation_id']
+    reopened = client.get(f'/api/investigations/{investigation_id}').json()
+    assert reopened == payload
+    assert reopened['history'][0]['payload']['loss_id'] == '000007'
+    assert reopened['indicator']['snapshot']['lineage'][0]['source_record_id'] == 1
+
+
+def test_loss_id_alone_is_rejected_without_writing(client_and_dbs):
+    client, _, _ = client_and_dbs
+    response = client.post('/api/investigations', json={'loss_id': '101'})
+    assert response.status_code == 422
+    assert client.get('/api/investigations').json()['total_count'] == 0
+
+
+def test_indicator_must_belong_to_selected_calculation(client_and_dbs):
+    client, data_db, _ = client_and_dbs
+    conn = connect(data_db)
+    conn.execute("INSERT INTO calculation_runs (id, started_at, operational_day, engine_version, config_snapshot_json, status) VALUES (11, '2026-07-20', '2026-07-20', '1.2.3', '{}', 'SUCCESS')")
+    conn.commit()
+    conn.close()
+    response = client.post('/api/investigations', json={'calculation_id': 11, 'indicator_id': 101, 'title': 'Vínculo inválido'})
+    assert response.status_code == 404
+    assert client.get('/api/investigations').json()['total_count'] == 0

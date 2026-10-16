@@ -93,6 +93,7 @@ class InvestigationService:
             if rule_row:
                 rule_versions.append({"rule_code": indicator_row["rule_code"], "version": indicator_row["rule_version"], "formula": rule_row["formula"], "config_json": json.loads(rule_row["config_json"] or "{}")})
             origin_snapshot = {
+                "loss_id": payload.get("loss_id"),
                 "calculation_id": payload["calculation_id"],
                 "engine_version": calc_row["engine_version"],
                 "rule_versions": rule_versions,
@@ -136,7 +137,7 @@ class InvestigationService:
             })
             repository.create_history_event(investigation_id, {
                 "event_type": "INVESTIGATION_CREATED",
-                "payload_json": {"calculation_id": payload["calculation_id"], "indicator_id": payload["indicator_id"]},
+                "payload_json": {"calculation_id": payload["calculation_id"], "indicator_id": payload["indicator_id"], "loss_id": payload.get("loss_id")},
                 "created_at": now,
             })
             repository.commit()
@@ -191,6 +192,7 @@ class InvestigationService:
             origin_snapshot = json.loads(row["origin_snapshot_json"] or "{}")
             return {
                 "investigation_id": row["investigation_id"],
+                "loss_id": origin_snapshot.get("loss_id"),
                 "calculation_id": row["calculation_id"],
                 "primary_indicator_id": row["primary_indicator_id"],
                 "operational_day": row["operational_day"],
@@ -242,3 +244,4 @@ class InvestigationService:
             }
         finally:
             investigation_conn.close()
+
